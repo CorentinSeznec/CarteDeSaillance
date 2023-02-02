@@ -130,12 +130,10 @@ def save_image(filename, path_to_frame, path_to_BB):
                 b_box = [ y_min,x_min , y_max, x_max]
                 # cv.circle(img_to_show,(y_max,x_max),50,(0,0,255))
                 # draw_image(img_to_show, b_box)
-                y_ , x_ = y_max+y_min,x_max+x_min
-                b_box = [ y_min,x_min , y_max, x_max]
-                new_img = img_to_show[x_max:x_, y_max:y_,: ]
+
                 #print("this is image", num_img)
 
-                # new_img = img_to_show[x_min:x_max, y_min:y_max,: ]
+                new_img = img_to_show[x_min:x_max, y_min:y_max,: ]
                 
                
                 cv.imwrite(path_to_frame+'/patches/'+"patch"+str(num_img)+'.png', new_img)
