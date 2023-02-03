@@ -115,8 +115,7 @@ def save_image(filename, path_to_frame, path_to_BB):
 
             else:
                 num_img = int(file_line[0])
-                # y_max, x_max = int(file_line[2]), int(file_line[3])
-                # y_min, x_min = int(file_line[4]), int(file_line[5])
+
                 
                 y_max, x_max = int(file_line[2]), int(file_line[3])
                 y_min, x_min = int(file_line[4]), int(file_line[5])
@@ -128,10 +127,7 @@ def save_image(filename, path_to_frame, path_to_BB):
                 img_to_show = cv.imread(img_path)
 
                 b_box = [ y_min,x_min , y_max, x_max]
-                # cv.circle(img_to_show,(y_max,x_max),50,(0,0,255))
-                # draw_image(img_to_show, b_box)
 
-                #print("this is image", num_img)
 
                 new_img = img_to_show[x_min:x_max, y_min:y_max,: ]
                 

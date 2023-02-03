@@ -2,9 +2,7 @@ from utils import *
 import os
 import shutil
 
-# fine-tuning 
-# move to data
-# entrainer le modèle avec quelles boites englobantes ?
+
 
 # dir is train1, test1
 def createPatchs(dir):
@@ -47,6 +45,6 @@ def createPatchs(dir):
         
         
 
-createPatchs('test2')
+
 createPatchs('test1')
 createPatchs('train1')

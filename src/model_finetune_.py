@@ -16,7 +16,7 @@ tf.config.list_physical_devices('GPU')
 
 isSalliancyMap = sys.argv[1] # 1 for salliancy
 if isSalliancyMap:
-        folder = '/Salliances'
+        folder = '/Saillances'
 
 else:
         folder = '/BB'
@@ -40,10 +40,10 @@ for root_dir, cur_dir, files in os.walk(test_dir2):
 
 
 
-nbr_subdataset = 2 # number of subdataset of test1
+nbr_subdataset = 5 # number of subdataset of test1
 elmt_per_split = nbr_test_img1 // nbr_subdataset
 batch_size = 50
-epochs = 2
+epochs = 10
 model_name = "model_finetune"
 model_to_load = "regular_model"
 
@@ -109,8 +109,16 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
 
 ## Creation of datagenerator
 print("\nDATAGENERATOR 1 & 2 CREATION")
+train_datagen = tf.keras.preprocessing.image.ImageDataGenerator()
 test_datagen1 = tf.keras.preprocessing.image.ImageDataGenerator()
 test_datagen2 = tf.keras.preprocessing.image.ImageDataGenerator()
+
+train_generator = train_datagen.flow_from_directory(
+        train_dir,  # This is the source directory for training images
+        target_size=(150, 150),  # All images will be resized to 150x150
+        batch_size=batch_size,
+        # Since we use binary_crossentropy loss, we need binary labels
+        class_mode='categorical')
 
 test_generator1 = test_datagen1.flow_from_directory(
         test_dir1,
@@ -149,7 +157,7 @@ for layer in model.layers[-1:]:
 
 
 ## Compilation
-model.compile(optimizer=tf.keras.optimizers.Adam(1e-5),
+model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
                 loss="categorical_crossentropy",
                 metrics=['accuracy'])
 
@@ -221,15 +229,31 @@ for (iteration, (images, label)) in enumerate(ds_counter.take(nbr_subdataset)):
 # save plot
 
 plt.plot(range(epochs*nbr_subdataset+1), history_saved, label ='Acc on test1')
-plt.plot(range(epochs*nbr_subdataset+1), val_history_saved, label = 'Acc on test2')
+plt.plot(range(epochs*nbr_subdataset+1), val_history_saved, label = 'Val Acc on test2')
 plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
 plt.legend()
-plt.title("Val Acc and Acc on test1 and test2 during Finetuning")
+plt.title("Acc and Val Acc on test1 and test2 during Finetuning")
 plt.savefig(".."+folder+"/ValAccuracyFinetuning2.png")
 
 
 
+print("\nTEST1")
+Y_pred_1 = model.predict_generator(test_generator1, nbr_test_img1 // batch_size+1)
+y_pred = np.argmax(Y_pred_1, axis=1)
+print('Confusion Matrix')
+print(confusion_matrix(test_generator1.classes, y_pred))
+print('Classification Report')
+target_names = list(train_generator.class_indices.keys())
+print(classification_report(test_generator1.classes, y_pred, target_names=target_names))
 
+print("\nTEST2")
+Y_pred_2 = model.predict_generator(test_generator2, nbr_test_img2 // batch_size+1)
+y_pred = np.argmax(Y_pred_2, axis=1)
+print('Confusion Matrix')
+print(confusion_matrix(test_generator2.classes, y_pred))
+print('Classification Report')
+target_names = list(train_generator.class_indices.keys())
+print(classification_report(test_generator2.classes, y_pred, target_names=target_names))
 
 

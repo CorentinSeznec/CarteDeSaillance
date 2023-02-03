@@ -15,11 +15,12 @@ from tensorflow import keras
 
 isSalliancyMap = sys.argv[1] # 1 for salliancy
 if isSalliancyMap:
-        folder = '/Salliances'
+        folder = '/Saillances'
 
 else:
         folder = '/BB'
 
+print("folder", folder)
 train_dir = ".."+folder+"/train1/"
 test_dir1 = ".."+folder+"/test1/"
 test_dir2 = ".."+folder+"/test2/"
@@ -40,12 +41,12 @@ for root_dir, cur_dir, files in os.walk(test_dir2):
 
 
 batch_size = 50
-epochs = 2
+epochs = 30
 model_name = "regular_model"
 
 train_datagen = tf.keras.preprocessing.image.ImageDataGenerator()
 test_datagen = tf.keras.preprocessing.image.ImageDataGenerator()
-
+print(train_dir)
 # Flow training images in batches of 20 using train_datagen generator
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # This is the source directory for training images
@@ -90,7 +91,7 @@ model= tf.keras.Model(inputs, outputs)
 
 #optimizer = tf.keras.optimizers.Adam()
 
-model.compile(optimizer="adam",
+model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
                 loss="categorical_crossentropy",
                 metrics=['accuracy'])
 
@@ -153,12 +154,12 @@ for acc in history.history['accuracy']:
 print("\nhistory",history_list)
 print("\nval_history",val_history_list)
 
-plt.plot(range(epochs+1), history_list, label="Accuracy")
+plt.plot(range(epochs+1), history_list, label="Accuracy (train)")
 
-plt.plot(range(epochs+1), val_history_list, label="Val Accuracy")
+plt.plot(range(epochs+1), val_history_list, label="Val Accuracy (test2)")
 plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
-plt.title("Acc and val Acc on test 1 and test2 during training")
+plt.title("Acc and val Acc on train and test2 during training")
 plt.legend()
 plt.savefig(".."+folder+"/ValAccuracyTraining.png")
 
@@ -182,3 +183,17 @@ print(confusion_matrix(test_generator2.classes, y_pred))
 print('Classification Report')
 target_names = list(train_generator.class_indices.keys())
 print(classification_report(test_generator2.classes, y_pred, target_names=target_names))
+
+# y_true = [0, 0, 2, 2, 1]
+# y_pred = [0, 1, 2, 2, 0]
+
+# import matplotlib.pyplot as plt
+# from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+# cm = confusion_matrix(y_true, y_pred, labels=[0,1,2])
+# disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+#                               display_labels=[0,1,2])
+# disp.plot()
+# plt.savefig('foo.png')
+# plt.show()
+
